@@ -80,15 +80,30 @@ export class WishesService {
     return wish;
   }
 
-  async copy(user: UserProfileResponseDto, wishId: number): Promise<any> {
+  async copy(user: UserProfileResponseDto, wishId: number): Promise<Wish> {
     const wishToCopy = await this.wishesRepository.findOne({
       where: { id: wishId },
+      relations: { owner: true },
     });
     if (!wishToCopy) {
       throw new NotFoundException('Подарок не найлен');
     }
+    const wishDublicated = await this.wishesRepository.find({
+      relations: { owner: true },
+      where: {
+        link: wishToCopy.link,
+        owner: { id: user.id },
+      },
+    });
+    if (wishDublicated.length) {
+      throw new ForbiddenException(
+        'В списке ваших желаний уже есть такой подарок',
+      );
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...rest } = wishToCopy;
     const wish = await this.wishesRepository.create({
-      ...wishToCopy,
+      ...rest,
       owner: user,
     });
     await this.wishesRepository.save(wish);

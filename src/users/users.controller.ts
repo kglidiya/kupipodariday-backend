@@ -22,7 +22,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('/me')
-  findOne(@Req() req: any): Promise<UserProfileResponseDto> {
+  findOne(@Req() req): Promise<UserProfileResponseDto> {
     const { id } = req.user;
     const user = this.usersService.findOneById(id);
     return user;

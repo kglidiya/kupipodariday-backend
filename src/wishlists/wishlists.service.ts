@@ -94,7 +94,7 @@ export class WishlistsService {
     return wishList;
   }
 
-  async delete(id: number, owner: UserProfileResponseDto): Promise<any> {
+  async delete(id: number, owner: UserProfileResponseDto): Promise<WishList> {
     const wishListToDelete = await this.wishListRepository.findOne({
       where: { id },
     });
